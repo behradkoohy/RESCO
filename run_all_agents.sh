@@ -1,0 +1,10 @@
+python main.py --agent MAXWAVE --map ingolstadt21
+python main.py --agent MAXPRESSURE --map ingolstadt21
+python main.py --agent STOCHASTIC --map ingolstadt21
+python main.py --agent IPPO --map ingolstadt21
+python main.py --agent MPLight --map ingolstadt21
+python main.py --agent MA2C --map ingolstadt21
+python main.py --agent FMA2C --map ingolstadt21
+python main.py --agent MPLightFULL --map ingolstadt21
+python main.py --agent FMA2CFull --map ingolstadt21
+python main.py --agent FMA2CVAL --map ingolstadt21

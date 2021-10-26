@@ -127,7 +127,8 @@ class MultiSignal(gym.Env):
                           self.log_dir + self.connection_name + os.sep + 'tripinfo_' + str(self.run) + '.xml',
                           '--tripinfo-output.write-unfinished',
                           '--no-step-log', 'True',
-                          '--no-warnings', 'True']
+                          '--no-warnings', 'True',
+                          '--device.emissions.probability', '1.0']
         if self.libsumo:
             traci.start(self.sumo_cmd)
             self.sumo = traci
