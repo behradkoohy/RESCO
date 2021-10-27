@@ -8,14 +8,14 @@ from avg_waitingTime import waiting
 from avg_queue import queue
 
 map_title = {
-    'grid4x4': '4x4 Grid',
-    'arterial4x4': '4x4 Avenues',
-    'ingolstadt1': 'Ingolstadt Single Signal',
-    'ingolstadt7': 'Ingolstadt Corridor',
+    # 'grid4x4': '4x4 Grid',
+    # 'arterial4x4': '4x4 Avenues',
+    # 'ingolstadt1': 'Ingolstadt Single Signal',
+    # 'ingolstadt7': 'Ingolstadt Corridor',
     'ingolstadt21': 'Ingolstadt Region',
-    'cologne1': 'Cologne Single Signal',
-    'cologne3': 'Cologne Corridor',
-    'cologne8': 'Cologne Region'
+    # 'cologne1': 'Cologne Single Signal',
+    # 'cologne3': 'Cologne Corridor',
+    # 'cologne8': 'Cologne Region'
 }
 
 alg_name = {
@@ -165,8 +165,8 @@ for met_i, metric in enumerate(metrics):
         plt.xticks(points, labels, fontsize=fs)
         #plt.xlabel('Episode', fontsize=32)
         #plt.ylabel('Delay (s)', fontsize=32)
-        plt.title(map_title[map], fontsize=fs)
-        #plt.legend(prop={'size': 25})
+        plt.title(map_title[map] + " - " + metrics_str[met_i], fontsize=fs)
+        plt.legend(loc=0)
         bot, top = plt.ylim()
         if bot < 0: bot = 0
         plt.ylim(bot, dqn_max)
