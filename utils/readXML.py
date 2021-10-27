@@ -5,7 +5,7 @@ import numpy as np
 import sys
 from map_config import map_configs
 
-log_dir = 'C:\\Users\\James\\PycharmProjects\\MATraffic\\logs\\'
+log_dir = '/Users/behradkoohy/sumo-scratchpad/RESCO/logs/'
 env_base = '..'+os.sep+'environments'+os.sep
 names = [folder for folder in next(os.walk(log_dir))[1]]
 
