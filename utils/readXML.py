@@ -34,6 +34,16 @@ for metric in metrics:
                 for child in root:
                     try:
                         num_trips += 1
+                        # emissions calculations
+                        emission = child[0].attrib
+                        co_tot  = float(emission['CO_abs'])
+                        co2_tot = float(emission['CO2_abs'])
+                        hc_tot  = float(emission['HC_abs'])
+                        pmx_tot = float(emission['PMx_abs'])
+                        nox_abs = float(emission['NOx_abs'])
+                        fuel_abs= float(emission['fuel_abs'])
+
+
                         total += float(child.attrib[metric])
                         if metric == 'timeLoss':
                             total += float(child.attrib['departDelay'])
