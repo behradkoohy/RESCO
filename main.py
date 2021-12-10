@@ -27,15 +27,24 @@ def main():
     ap.add_argument("--gui", type=bool, default=False)
     ap.add_argument("--libsumo", type=bool, default=False)
     ap.add_argument("--tr", type=int, default=0)  # Can't multi-thread with libsumo, provide a trial number
+    ap.add_argument("--out_name", type=str, default="")
     args = ap.parse_args()
+    args.map = 'ingolstadt21'
+    # args.out_name = args.agent + "-" + str(args.tr) + "-" + args.map
+    args.trials = 1
+    args.libsumo = True
+    args.eps = 500
+
 
     if args.procs == 1 or args.libsumo:
+        print("running trials")
         run_trial(args, args.tr)
     else:
         pool = mp.Pool(processes=args.procs)
         for trial in range(1, args.trials+1):
             pool.apply_async(run_trial, args=(args, trial))
         pool.close()
+        print("running pool")
         pool.join()
 
 
@@ -77,7 +86,7 @@ def run_trial(args, trial):
                       route=route, step_length=map_config['step_length'], yellow_length=map_config['yellow_length'],
                       step_ratio=map_config['step_ratio'], end_time=map_config['end_time'],
                       max_distance=agt_config['max_distance'], lights=map_config['lights'], gui=args.gui,
-                      log_dir=args.log_dir, libsumo=args.libsumo, warmup=map_config['warmup'])
+                      log_dir=args.log_dir, libsumo=args.libsumo, warmup=map_config['warmup'], connection_name=args.out_name)
 
     agt_config['episodes'] = int(args.eps * 0.8)    # schedulers decay over 80% of steps
     agt_config['steps'] = agt_config['episodes'] * num_steps_eps

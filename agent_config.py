@@ -4,10 +4,11 @@ import states
 from agents.stochastic import STOCHASTIC
 from agents.maxwave import MAXWAVE
 from agents.maxpressure import MAXPRESSURE
-from agents.pfrl_dqn import IDQN
+from agents.test_dqn import IDQN
 from agents.pfrl_ppo import IPPO
 from agents.mplight import MPLight
 from agents.fma2c import FMA2C
+
 
 agent_configs = {
     # *VAL configs have distance settings according to the validation scenarios
