@@ -13,15 +13,12 @@ from mdp_config import mdp_configs
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--agent", type=str, default='STOCHASTIC',
-                    choices=['STOCHASTIC', 'MAXWAVE', 'MAXPRESSURE', 'IDQN', 'IPPO', 'MPLight', 'MA2C', 'FMA2C',
-                             'MPLightFULL', 'FMA2CFull', 'FMA2CVAL'])
+                    choices=[name for name in agent_configs])
     ap.add_argument("--trials", type=int, default=1)
     ap.add_argument("--eps", type=int, default=100)
     ap.add_argument("--procs", type=int, default=1)
     ap.add_argument("--map", type=str, default='grid4x4',
-                    choices=['grid4x4', 'arterial4x4', 'ingolstadt1', 'ingolstadt7', 'ingolstadt21',
-                             'cologne1', 'cologne3', 'cologne8',
-                             ])
+                    choices=[name for name in map_configs])
     ap.add_argument("--pwd", type=str, default=str(pathlib.Path().absolute())+os.sep)
     ap.add_argument("--log_dir", type=str, default=str(pathlib.Path().absolute())+os.sep+'logs'+os.sep)
     ap.add_argument("--gui", type=bool, default=False)

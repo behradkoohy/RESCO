@@ -47,8 +47,8 @@ def drq_norm(signals):
             lane_obs.append(signal.full_observation[lane]['approach'] / 28)
             lane_obs.append(signal.full_observation[lane]['total_wait'] / 28)
             lane_obs.append(signal.full_observation[lane]['queue'] / 28)
-            import pdb
-            pdb.set_trace()
+            # import pdb
+            # pdb.set_trace()
             total_speed = 0
             vehicles = signal.full_observation[lane]['vehicles']
             for vehicle in vehicles:
