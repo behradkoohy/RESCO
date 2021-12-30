@@ -2,6 +2,56 @@ import numpy as np
 
 from mdp_config import mdp_configs
 
+def get_lane_obs(signal, lane, act_index, i):
+    lane_obs = []
+    if i == act_index:
+        lane_obs.append(1)
+    else:
+        lane_obs.append(0)
+
+    lane_obs.append(signal.full_observation[lane]['approach'])
+    lane_obs.append(signal.full_observation[lane]['total_wait'])
+    lane_obs.append(signal.full_observation[lane]['queue'])
+
+    total_speed = 0
+    vehicles = signal.full_observation[lane]['vehicles']
+    for vehicle in vehicles:
+        total_speed += vehicle['speed']
+    lane_obs.append(total_speed)
+
+    return lane_obs
+
+
+def graph(signals, adjs=False):
+    observations = dict()
+
+    for signal_id in signals:
+        signal = signals[signal_id]
+        obs = []
+        act_index = signal.phase
+        # The node making the decisions
+        for i, lane in enumerate(signal.lanes):
+            # Information for the current lane
+            obs.append(get_lane_obs(signal, lane, act_index, i))
+
+        # Include information about surrounding nodes
+        for neighbours in set(signal.out_lane_to_signalid.values()):
+            # Select phase, collecting the relevant information from neighbours
+            neighbour_obs = []
+            nsignal = signals[neighbours]
+            for i, lane in enumerate(nsignal.lanes):
+                neighbour_obs.append(get_lane_obs(nsignal, lane, nsignal.phase, i))
+            # Reduce Phase
+            # TODO: implement different options here
+            # Connect Phase
+            [obs.append(x) for x in neighbour_obs]
+        if adjs:
+            observations[signal_id+"_adj"] = set(signal.out_lane_to_signalid.values())
+        
+        observations[signal_id] = np.expand_dims(np.asarray(obs), axis=0)
+
+    return observations
+
 
 def drq(signals):
     observations = dict()

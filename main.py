@@ -30,7 +30,7 @@ def main():
     # args.out_name = args.agent + "-" + str(args.tr) + "-" + args.map
     args.trials = 1
     args.libsumo = True
-    args.eps = 500
+    args.eps = 100
 
 
     if args.procs == 1 or args.libsumo:
@@ -95,6 +95,9 @@ def run_trial(args, trial):
     for key in env.obs_shape:
         obs_act[key] = [env.obs_shape[key], len(env.phases[key]) if key in env.phases else None]
     agent = alg(agt_config, obs_act, args.map, trial)
+
+    # import pdb
+    # pdb.set_trace()
 
     for _ in range(args.eps):
         obs = env.reset()
