@@ -8,7 +8,8 @@ from agents.test_dqn import IDQN
 from agents.pfrl_ppo import IPPO
 from agents.mplight import MPLight
 from agents.fma2c import FMA2C
-from agents.graph import GIDQN
+from agents.graph import Graph_IDQN
+from agents.graph_rec import Graph_RIDQN
 
 agent_configs = {
     # *VAL configs have distance settings according to the validation scenarios
@@ -178,7 +179,7 @@ agent_configs = {
         'reward_clip': 2.0,
     },
     'GRAPH': {
-        'agent': GIDQN,
+        'agent': Graph_IDQN,
         'state': states.graph,
         'reward': rewards.wait_norm,
         'max_distance': 200,
@@ -188,5 +189,29 @@ agent_configs = {
         'EPS_END': 0.0,
         'EPS_DECAY': 220,
         'TARGET_UPDATE': 500
-    }
+    },
+    'GRAPH_Rec': {
+        'agent': Graph_RIDQN,
+        'state': states.graph,
+        'reward': rewards.wait_norm,
+        'max_distance': 200,
+        'BATCH_SIZE': 32,
+        'GAMMA': 0.99,
+        'EPS_START': 1.0,
+        'EPS_END': 0.0,
+        'EPS_DECAY': 220,
+        'TARGET_UPDATE': 500
+    },
+    'GRAPHP': {
+        'agent': Graph_IDQN,
+        'state': states.graph_pooled,
+        'reward': rewards.wait_norm,
+        'max_distance': 200,
+        'BATCH_SIZE': 32,
+        'GAMMA': 0.99,
+        'EPS_START': 1.0,
+        'EPS_END': 0.0,
+        'EPS_DECAY': 220,
+        'TARGET_UPDATE': 500
+    },
 }

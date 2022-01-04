@@ -9,6 +9,9 @@ from agent_config import agent_configs
 from map_config import map_configs
 from mdp_config import mdp_configs
 
+import numpy as np
+
+from collections import deque
 
 def main():
     ap = argparse.ArgumentParser()
@@ -100,10 +103,44 @@ def run_trial(args, trial):
     # pdb.set_trace()
 
     for _ in range(args.eps):
+        # create and initialise memory store
+        if "GRAPH_Rec" in args.agent:
+            agent_memories = {}
+            deque(maxlen=10)
+            for key in obs_act:
+                agent_memories[key] = deque([0 for _ in range(10)], maxlen=10)
+
         obs = env.reset()
         done = False
         while not done:
             act = agent.act(obs)
+            
+            if "GRAPH_Rec" in args.agent:
+                # update the memories
+                for agt, action in act.items():
+                    agent_memories[agt].append(action)
+                new_agt_obs = {}    
+                # adding to observation array
+                for agt, memory in agent_memories.items():
+                    # store old obs
+                    agt_obs = obs[agt]
+                    # make memory into an np array
+                    memory = np.reshape(memory, (2, 5))
+                    # the append operation reshapes the array so reshape it back
+                    # import pdb
+                    # pdb.set_trace()
+
+                    agt_obs_unshaped = np.append(agt_obs, memory)
+
+                    agt_obs = np.reshape(
+                            agt_obs_unshaped,
+                            (len(agt_obs[0])+2 , 5)
+                        )
+                    # agt_obs = np.append(agt_obs, memory)
+                    new_agt_obs[agt] = agt_obs
+                obs = new_agt_obs
+
+
             obs, rew, done, info = env.step(act)
             agent.observe(obs, rew, done, info)
     env.close()
