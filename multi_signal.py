@@ -32,7 +32,7 @@ class MultiSignal(gym.Env):
         self.yellow_length = yellow_length
         self.step_ratio = step_ratio
         if connection_name == "":
-              self.connection_name = run_name + '-' + map_name + '---' + state_fn.__name__ + '-' + reward_fn.__name__
+              self.connection_name = run_name + '_' + state_fn.__name__ + '_' + state_fn.__name__  + '-' + map_name + '---' + state_fn.__name__ + '-' + reward_fn.__name__
         else:
             self.connection_name = connection_name
         self.map_name = map_name
