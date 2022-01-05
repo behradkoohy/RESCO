@@ -55,7 +55,7 @@ for experiment_name in titles:
 
 def add_to_db(trial, run_name):
     run_name_split = run_name.split("-")
-    algorithm = run_name_split[0]
+    algorithm = run_name_split[0] + run_name_split[4]
     environment = run_name_split[2]
     # trial is already computed
 
