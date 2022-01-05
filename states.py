@@ -24,7 +24,7 @@ def get_lane_obs(signal, lane, act_index, i):
     return lane_obs
 
 
-def graph(signals, adjs=False):
+def graph(signals):
     observations = dict()
 
     for signal_id in signals:
@@ -47,14 +47,12 @@ def graph(signals, adjs=False):
             # _NO_ reduction happens in this variant
             # Connect Phase
             [obs.append(x) for x in neighbour_obs]
-        if adjs:
-            observations[signal_id+"_adj"] = set(signal.out_lane_to_signalid.values())
         
         observations[signal_id] = np.expand_dims(np.asarray(obs), axis=0)
 
     return observations
 
-def graph_pooled(signals, adjs=False):
+def graph_pooled(signals):
     observations = dict()
 
     for signal_id in signals:
@@ -80,15 +78,13 @@ def graph_pooled(signals, adjs=False):
 
             # Connect Phase
             [obs.append(x) for x in neighbour_obs]
-        if adjs:
-            observations[signal_id + "_adj"] = set(signal.out_lane_to_signalid.values())
 
         observations[signal_id] = np.expand_dims(np.asarray(obs), axis=0)
 
     return observations
 
 
-def graph(signals, adjs=False):
+def graph_pool_norm(signals):
     observations = dict()
 
     for signal_id in signals:
@@ -111,8 +107,6 @@ def graph(signals, adjs=False):
             # _NO_ reduction happens in this variant
             # Connect Phase
             [obs.append(x) for x in neighbour_obs]
-        if adjs:
-            observations[signal_id + "_adj"] = set(signal.out_lane_to_signalid.values())
 
         observations[signal_id] = np.expand_dims(np.asarray(obs), axis=0)
 

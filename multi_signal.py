@@ -86,19 +86,15 @@ class MultiSignal(gym.Env):
         for ts in self.all_ts_ids:
             self.signals[ts].signals = self.signals
             self.signals[ts].observe(self.step_length, self.max_distance)
-        if "Graph_" in run_name:
-            observations = self.state_fn(self.signals, adjs=True)
-            adjs = {ids.replace("_adj", "") : adj for ids, adj in observations.items() if "_adj" in ids}
-            observations = {ids : adj for ids, adj in observations.items() if "_adj" not in ids}
-            self.adjacents = adjs
-            self.adjacency_matrix = np.array([[(1 if x in v else 0) for x in adjs.keys()] for v in adjs.values()])
-        else:
-            observations = self.state_fn(self.signals)
-            observations = {ids : adj for ids, adj in observations.items()}
-            self.adjacents = None
-            self.adjacency_matrix = None
 
+        adjs = {}
+        for id, sig in self.signals.items():
+            adjs[id] = set(sig.out_lane_to_signalid.values())
+        self.adjacents = adjs
+        self.adjacency_matrix = np.array([[(1 if x in v else 0) for x in adjs.keys()] for v in adjs.values()])
 
+        observations = self.state_fn(self.signals)
+        observations = {ids : adj for ids, adj in observations.items()}
 
         for ts in observations:
             self.obs_shape[ts] = observations[ts].shape
