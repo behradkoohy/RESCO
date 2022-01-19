@@ -78,6 +78,7 @@ def run_trial(args, trial):
     route = map_config['route']
     if route is not None: route = args.pwd + route
 
+
     env = MultiSignal(alg.__name__+'-tr'+str(trial),
                       args.map,
                       args.pwd + map_config['net'],

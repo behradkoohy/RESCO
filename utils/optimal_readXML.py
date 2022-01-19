@@ -23,11 +23,13 @@ def create_connection(database):
 	          CREATE TABLE IF NOT EXISTS experiments (
 	          metric TEXT NOT NULL,
 	          algorithm TEXT NOT NULL,
+	          state TEXT NOT NULL,
+	          reward TEXT NOT NULL,
 	          environment TEXT NOT NULL,
 	          trial INT NOT NULL,
 	          epoch INT NOT NULL,
 	          result FLOAT NOT NULL,
-	          PRIMARY KEY (metric, algorithm, environment, trial, epoch)
+	          PRIMARY KEY (metric, algorithm, state, reward, environment, trial, epoch)
 	          )
 	          ''')
     conn.commit()
@@ -39,12 +41,12 @@ def get_cur(database):
     # conn = sqlite3.connect(database)
     return conn.cursor()
 
-def update_database_values(metric, algorithm, environment, trial, epoch, value):
+def update_database_values(metric, algorithm, state, reward, environment, trial, epoch, value):
     conn = get_cur(db_name)
     conn.execute("""
-        INSERT OR REPLACE INTO experiments (metric, algorithm, environment, trial, epoch, result)
-        VALUES (?, ?, ?, ?, ?, ?)
-    """, (metric, algorithm, environment, trial, epoch, value))
+        INSERT OR REPLACE INTO experiments (metric, algorithm, state, reward, environment, trial, epoch, result)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """, (metric, algorithm, state, reward, environment, trial, epoch, value))
 
 
 # Aggregate all the relevant information into lists of folders
@@ -56,8 +58,10 @@ print(experiments.keys())
 exit()
 def add_to_db(trial, run_name):
     run_name_split = run_name.split("-")
-    algorithm = run_name_split[0] + run_name_split[4]
+    algorithm = run_name_split[0]
     environment = run_name_split[2]
+    state = run_name_split[3]
+    reward = run_name_split[4]
     # trial is already computed
 
     xml_regex = re.compile("tripinfo_.*\.xml")
@@ -90,7 +94,7 @@ def add_to_db(trial, run_name):
             # print(number_trips, metric_outs)
             for name, total in metric_outs.items():
                 metric_outs[name] = metric_outs[name] / float(number_trips)
-                update_database_values(name, algorithm, environment, trial, epoch, metric_outs[name])
+                update_database_values(name, algorithm, state, reward, environment, trial, epoch, metric_outs[name])
             # print(number_trips, metric_outs)
             # get_cur(db_name).commit()
             conn.commit()
