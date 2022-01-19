@@ -41,12 +41,21 @@ class Graph_RIDQN(IndependentAgent):
             h = conv2d_size_out(obs_space[1])
             w = conv2d_size_out(obs_space[2])
             
-            model = nn.Sequential(
-                gRNNConc(h, w, obs_space, act_space, k_size),
-                init_chainer_default(nn.Linear(64, act_space)),
-                DiscreteActionValueHead()
-                )
-
+            # model = nn.Sequential(
+            #     gRNNConc(h, w, obs_space, act_space, k_size),
+            #     init_chainer_default(nn.Linear(64, act_space)),
+            #     DiscreteActionValueHead()
+            #     )
+            model = pfrl.nn.RecurrentSequential(
+                nn.Conv2d(obs_space[0], 64, kernel_size=(k_size, k_size)),
+                nn.ReLU(),
+                nn.Flatten(),
+                nn.Linear(h * w * 64, 64),
+                nn.ReLU(),
+                nn.LSTM(input_size=3136, hidden_size=512),
+                nn.Linear(512, act_space),
+                DiscreteActionValueHead(),
+            )
             self.agents[key] = DQNAgent(config, act_space, model)
 
 class DQNAgent(Agent):
@@ -55,7 +64,7 @@ class DQNAgent(Agent):
 
         self.model = model
         self.optimizer = torch.optim.Adam(self.model.parameters())
-        replay_buffer = replay_buffers.ReplayBuffer(10000)
+        replay_buffer = replay_buffers.EpisodicReplayBuffer(10000)
 
         if num_agents > 0:
             explorer = SharedEpsGreedy(
@@ -84,7 +93,8 @@ class DQNAgent(Agent):
                              gpu=self.device.index,
                              minibatch_size=config['BATCH_SIZE'], replay_start_size=config['BATCH_SIZE'],
                              phi=lambda x: np.asarray(x, dtype=np.float32),
-                             target_update_interval=config['TARGET_UPDATE'])
+                             target_update_interval=config['TARGET_UPDATE'],
+                             recurrent=True)
 
     def act(self, observation, valid_acts=None, reverse_valid=None):
         if isinstance(self.agent, SharedDQN):
