@@ -198,6 +198,8 @@ def drq_norm(signals):
 
             obs.append(lane_obs)
         observations[signal_id] = np.expand_dims(np.asarray(obs), axis=0)
+    import pdb
+    pdb.set_trace()
     return observations
 
 
@@ -217,6 +219,53 @@ def mplight(signals):
                 dwn_signal = signal.out_lane_to_signalid[lane]
                 if dwn_signal in signal.signals:
                     queue_length -= signal.signals[dwn_signal].full_observation[lane]['queue']
+            obs.append(queue_length)
+        observations[signal_id] = np.asarray(obs)
+    return observations
+
+def mplight_advanced(signals):
+    observations = dict()
+    for signal_id in signals:
+        signal = signals[signal_id]
+        junctions = {x:y for x,y in signal.full_observation.items() if x not in ('num_vehicles', 'arrivals', 'departures')}
+        vehicles = []
+        for id, details in junctions.items():
+            vehicles.append([s['speed'] for s in details['vehicles']])
+            # speeds = [ob['speed'] for ob in vehicles]
+        # print(vehicles)
+        fastest_vehicles = [max(l, default=0) for l in vehicles]
+        effective_range = [x*200 for x in fastest_vehicles]
+        effective_running_vehicles = sum(effective_range)
+        # print(effective_running_vehicles)
+        obs = [signal.phase, effective_running_vehicles]
+        for direction in signal.lane_sets:
+            # Add inbound
+            queue_length = 0
+            upcount = 0
+            for lane in signal.lane_sets[direction]:
+                upcount += 1
+                queue_length += signal.full_observation[lane]['queue']
+
+            # Subtract downstream
+            downstream_length = 0
+            downcount = 0
+            for lane in signal.lane_sets_outbound[direction]:
+                dwn_signal = signal.out_lane_to_signalid[lane]
+                if dwn_signal in signal.signals:
+                    downcount += 1
+                    downstream_length += signal.signals[dwn_signal].full_observation[lane]['queue']
+            if downcount == 0 and upcount == 0:
+                queue_length = 0
+
+            elif upcount == 0:
+                queue_length = 0 - (downstream_length/downcount)
+
+            elif downcount == 0:
+                queue_length = (queue_length/upcount)
+                
+            else:
+                queue_length = (queue_length/upcount) - (downstream_length/downcount)
+
             obs.append(queue_length)
         observations[signal_id] = np.asarray(obs)
     return observations

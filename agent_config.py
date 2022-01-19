@@ -41,6 +41,19 @@ agent_configs = {
         'TARGET_UPDATE': 500,
         'demand_shape': 1
     },
+    'MPLight': {
+        'agent': MPLight,
+        'state': states.mplight,
+        'reward': rewards.pressure,
+        'max_distance': 200,
+        'BATCH_SIZE': 32,
+        'GAMMA': 0.99,
+        'EPS_START': 1.0,
+        'EPS_END': 0.0,
+        'EPS_DECAY': 220,
+        'TARGET_UPDATE': 500,
+        'demand_shape': 1
+    },
     'FMA2CVAL': {
         'agent': FMA2C,
         'state': states.fma2c,
@@ -103,19 +116,7 @@ agent_configs = {
         'reward': rewards.wait_norm,
         'max_distance': 200
     },
-    'MPLight': {
-        'agent': MPLight,
-        'state': states.mplight,
-        'reward': rewards.pressure,
-        'max_distance': 200,
-        'BATCH_SIZE': 32,
-        'GAMMA': 0.99,
-        'EPS_START': 1.0,
-        'EPS_END': 0.0,
-        'EPS_DECAY': 220,
-        'TARGET_UPDATE': 500,
-        'demand_shape': 1
-    },
+
     'FMA2C': {
         'agent': FMA2C,
         'state': states.fma2c,
@@ -229,5 +230,18 @@ agent_configs = {
         'EPS_END': 0.0,
         'EPS_DECAY': 220,
         'TARGET_UPDATE': 500
+    },
+    'ADMPLight': {
+        'agent': MPLight,
+        'state': states.mplight_advanced,
+        'reward': rewards.pressure,
+        'max_distance': 200,
+        'BATCH_SIZE': 32,
+        'GAMMA': 0.99,
+        'EPS_START': 1.0,
+        'EPS_END': 0.0,
+        'EPS_DECAY': 220,
+        'TARGET_UPDATE': 500,
+        'demand_shape': 1
     },
 }
