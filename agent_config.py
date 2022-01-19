@@ -11,6 +11,9 @@ from agents.fma2c import FMA2C
 from agents.graph import Graph_IDQN
 from agents.graph_rec import Graph_RIDQN
 
+from agents.models.TwoConvLayers import TwoConvLayer
+
+
 agent_configs = {
     # *VAL configs have distance settings according to the validation scenarios
     'MAXWAVEVAL': {
@@ -189,6 +192,19 @@ agent_configs = {
         'EPS_END': 0.0,
         'EPS_DECAY': 220,
         'TARGET_UPDATE': 500
+    },
+    'GRAPH_CuMo': {
+        'agent': Graph_IDQN,
+        'state': states.graph,
+        'reward': rewards.wait_norm,
+        'max_distance': 200,
+        'BATCH_SIZE': 32,
+        'GAMMA': 0.99,
+        'EPS_START': 1.0,
+        'EPS_END': 0.0,
+        'EPS_DECAY': 220,
+        'TARGET_UPDATE': 500,
+        '__model':TwoConvLayer
     },
     'GRAPH_Rec': {
         'agent': Graph_RIDQN,

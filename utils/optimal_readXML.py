@@ -7,8 +7,8 @@ import concurrent
 
 from db_config import emission_outputs, metrics, db_name
 
-log_dir = '/home/behradkoohy/sumo_scratchpad/behrad-resco/RESCO/logs/'
-# log_dir = '/media/behradkoohy/pdata/iridis/agent_experiments/didqn_exp/'
+# log_dir = '/home/behradkoohy/sumo_scratchpad/behrad-resco/RESCO/logs/'
+log_dir = '/media/behradkoohy/pdata/iridis/agent_experiments/didqn_exp/'
 db_dir = "outputs.dir"
 env_base = '..' + os.sep + 'environments' + os.sep
 
@@ -50,9 +50,10 @@ def update_database_values(metric, algorithm, environment, trial, epoch, value):
 # Aggregate all the relevant information into lists of folders
 experiments = {}
 for experiment_name in titles:
-    experiments[experiment_name] = experiments.get(experiment_name, []) + [x for x in os.listdir(log_dir) if experiment_name in x]
+    experiments[experiment_name] = experiments.get(experiment_name, []) + [x for x in os.listdir(log_dir) if experiment_name == x.split("-")[0]]
 
-
+print(experiments.keys())
+exit()
 def add_to_db(trial, run_name):
     run_name_split = run_name.split("-")
     algorithm = run_name_split[0] + run_name_split[4]

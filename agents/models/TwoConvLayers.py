@@ -3,14 +3,14 @@ import torch.nn as nn
 
 
 class TwoConvLayer(nn.Module):
-    def __init__(self, h, w, obs_space, act_space, k_size, seq_l=10):
+    def __init__(self, h, w, obs_space, act_space, k_size):
 
         super().__init__()
 
         self.gfc1 = nn.Linear(32, 32)
 
-        self.conv = nn.Conv2d(obs_space[0], 64, kernel_size=(k_size, k_size))
-        self.conv2 = nn.Conv2d(64, 64, 4)
+        self.conv = nn.Conv2d(obs_space[0], 64, kernel_size=(2, 2))
+        self.conv2 = nn.Conv2d(64, 64, kernel_size=(2,2))
         self.fc1 = nn.Linear(h * w * 64, 64)
         self.fc2 = nn.Linear(64, 64)
         self.fc3 = nn.Linear(64, act_space)

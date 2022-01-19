@@ -9,15 +9,17 @@ from pfrl import explorers, replay_buffers
 from pfrl.explorer import Explorer
 from pfrl.agents import DQN
 from pfrl.q_functions import DiscreteActionValueHead
+from pfrl.initializers import init_chainer_default
 from pfrl.utils.contexts import evaluating
 
 from agents.agent import IndependentAgent, Agent
-
+from agents.models.TwoConvLayers import TwoConvLayer
 import pdb
 
 class Graph_IDQN(IndependentAgent):
     def __init__(self, config, obs_act, map_name, thread_number):
         super().__init__(config, obs_act, map_name, thread_number)
+        print("new agent")
         for key in obs_act:
             obs_space = obs_act[key][0]
             act_space = obs_act[key][1]
@@ -27,8 +29,8 @@ class Graph_IDQN(IndependentAgent):
             # pdb.set_trace()
             h = conv2d_size_out(obs_space[1])
             w = conv2d_size_out(obs_space[2])
-            
-            model = nn.Sequential(
+
+            default_model = nn.Sequential(
                 nn.Conv2d(obs_space[0], 64, kernel_size=(k_size, k_size)),
                 nn.ReLU(),
                 nn.Flatten(),
@@ -40,13 +42,25 @@ class Graph_IDQN(IndependentAgent):
                 DiscreteActionValueHead()
             )
 
+            preset_model = config.pop('__model', None)
+            if preset_model is None:
+                # print("Using default")
+                model = default_model
+            else:
+                print("Using custom")
+                model = nn.Sequential(
+                    preset_model(h, w, obs_space, act_space, k_size),
+                    init_chainer_default(nn.Linear(64, act_space)),
+                    DiscreteActionValueHead()
+                )
+
             self.agents[key] = DQNAgent(config, act_space, model)
 
 
 class DQNAgent(Agent):
     def __init__(self, config, act_space, model, num_agents=0):
         super().__init__()
-
+        print("new dqnagent init")
         self.model = model
         self.optimizer = torch.optim.Adam(self.model.parameters())
         replay_buffer = replay_buffers.ReplayBuffer(10000)
@@ -103,7 +117,7 @@ class SharedDQN(DQN):
     def __init__(self, q_function: torch.nn.Module, optimizer: torch.optim.Optimizer,
                  replay_buffer: pfrl.replay_buffer.AbstractReplayBuffer, gamma: float, explorer: Explorer,
                  gpu, minibatch_size, replay_start_size, phi, target_update_interval, update_interval):
-
+        print("new shareddqnagent init")
         super().__init__(q_function, optimizer, replay_buffer, gamma, explorer,
                          gpu=gpu, minibatch_size=minibatch_size, replay_start_size=replay_start_size, phi=phi,
                          target_update_interval=target_update_interval, update_interval=update_interval)

@@ -17,7 +17,7 @@
     </vType>
 
     <vType id="random_016" vClass="evehicle" color="blue">
-    <param key="has.battery.device" value="true"/>
+    <param key="has.battery.device" value="true"/>`
         <param key="maximumBatteryCapacity" value="75000"/>
     </vType>
 
