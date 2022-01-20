@@ -254,16 +254,12 @@ def mplight_advanced(signals):
                     downstream_length += signal.signals[dwn_signal].full_observation[lane]['queue']
             if downcount == 0 and upcount == 0:
                 queue_length = 0
-
             elif upcount == 0:
                 queue_length = 0 - (downstream_length/downcount)
-
             elif downcount == 0:
                 queue_length = (queue_length/upcount)
-                
             else:
                 queue_length = (queue_length/upcount) - (downstream_length/downcount)
-
             obs.append(queue_length)
         observations[signal_id] = np.asarray(obs)
     return observations

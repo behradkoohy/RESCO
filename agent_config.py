@@ -244,4 +244,17 @@ agent_configs = {
         'TARGET_UPDATE': 500,
         'demand_shape': 1
     },
+    'ADMPLight_WN': {
+        'agent': MPLight,
+        'state': states.mplight_advanced,
+        'reward': rewards.wait_norm,
+        'max_distance': 200,
+        'BATCH_SIZE': 32,
+        'GAMMA': 0.99,
+        'EPS_START': 1.0,
+        'EPS_END': 0.0,
+        'EPS_DECAY': 220,
+        'TARGET_UPDATE': 500,
+        'demand_shape': 1
+    },
 }
