@@ -61,8 +61,8 @@ def add_to_db(trial, run_name):
     run_name_split = run_name.split("-")
     algorithm = run_name_split[0]
     environment = run_name_split[2]
-    state = run_name_split[3]
-    reward = run_name_split[4]
+    state = run_name_split[4]
+    reward = run_name_split[5]
     # trial is already computed
 
     xml_regex = re.compile("tripinfo_.*\.xml")
