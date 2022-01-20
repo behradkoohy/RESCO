@@ -198,8 +198,6 @@ def drq_norm(signals):
 
             obs.append(lane_obs)
         observations[signal_id] = np.expand_dims(np.asarray(obs), axis=0)
-    import pdb
-    pdb.set_trace()
     return observations
 
 
