@@ -3,12 +3,13 @@ import sqlite3
 import xml.etree.ElementTree as ET
 import re
 
-import concurrent
+import concurrent.futures
 
 from db_config import emission_outputs, metrics, db_name
 
 # log_dir = '/home/behradkoohy/sumo_scratchpad/behrad-resco/RESCO/logs/'
-log_dir = '/media/behradkoohy/pdata/iridis/agent_experiments/didqn_exp/'
+# log_dir = '/media/behradkoohy/pdata/iridis/agent_experiments/didqn_exp/'
+log_dir = '/scratch/bk2g18/logs/'
 db_dir = "outputs.dir"
 env_base = '..' + os.sep + 'environments' + os.sep
 
@@ -55,7 +56,7 @@ for experiment_name in titles:
     experiments[experiment_name] = experiments.get(experiment_name, []) + [x for x in os.listdir(log_dir) if experiment_name == x.split("-")[0]]
 
 print(experiments.keys())
-exit()
+
 def add_to_db(trial, run_name):
     run_name_split = run_name.split("-")
     algorithm = run_name_split[0]
