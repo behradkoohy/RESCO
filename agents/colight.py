@@ -1,3 +1,4 @@
+
 from typing import Any, Sequence
 import numpy as np
 
@@ -9,11 +10,10 @@ from pfrl import explorers, replay_buffers
 from pfrl.explorer import Explorer
 from pfrl.agents import DQN
 from pfrl.q_functions import DiscreteActionValueHead
+from pfrl.initializers import init_chainer_default
 from pfrl.utils.contexts import evaluating
 
 from agents.agent import IndependentAgent, Agent
-
-import pdb
 
 class priorOutputLayer(nn.Module):
     def __init__(self):
@@ -22,36 +22,106 @@ class priorOutputLayer(nn.Module):
     def forward(self, x):
         # print(x.shape)
         # print(x.view(1,3).shape)
-        # return x.view(1,len(x))
-        print(x, x.shape, x.dim)
-        return x
+        # return
+        print(x)
+        return x.view(1,len(x))
 
-class IDQN(IndependentAgent):
+class AttentionLayer(nn.Module):
+    def __init__(self, n_intersections_in, n_vocab_in, n_embedding_out=64, m_value=64):
+        super().__init__()
+        """
+        Args:
+            n_intersections_in: THE NUMBER OF INTERSECTIONS TO CONSIDER, including the original one. If an intersection has 2 connected junctions, then this is 3.
+            n_vocab_in: THE NUMBER OF WORDS IN THE VOCAB, should be equal to the length of the rows of the matrix
+            n_embedding_out: THE NUMBER OF EMBEDDED DIMENSIONS, can be set to anything (default 64).
+        """
+        self.n_intersection_in = n_intersections_in
+        # self.embedding_layers = {x: nn.Embedding(n_vocab_in*1000, n_embedding_out) for x in range(n_intersections_in)}
+        self.embedding_layers = {x: nn.Linear(n_vocab_in, n_embedding_out) for x in range(n_intersections_in)}
+        self.eij_layers = {x: nn.Parameter(torch.rand( (n_vocab_in,m_value) ), requires_grad=True ) for x in range(n_intersections_in)}
+
+        print(n_intersections_in, n_vocab_in, n_embedding_out)
+
+
+    def forward(self, x):
+
+        # x=torch.tensor(x[0][0])
+        x = x[0][0].clone().detach().float()
+        """
+        Args:
+            x: *HAS* to be a 2dim array - similar to the one given to the IDQN code
+
+        Returns: A tensor of some sort
+
+        """
+        # Check if there is an equal number of embedders and intersections
+        if len(x) != self.n_intersection_in:
+            raise Exception("Not same number of intersections as defined")
+        # Embed input layers
+        embed_out = {}
+        for row_index, row in enumerate(x):
+            # row = row.to(torch.int64)
+            embed_out[row_index] = self.embedding_layers[row_index](row)
+
+        target_intersection_embedLayer = self.embedding_layers[0]
+
+        e_ij_values = []
+        # Calculate the e_IJ values
+        for row_index, row in self.embedding_layers.items():
+            # import pdb
+            # pdb.set_trace()
+            e_ij_values.append(
+                torch.dot(
+                    torch.flatten(torch.matmul(
+                        self.eij_layers[0],
+                        embed_out[row_index].T
+                    )),
+                    torch.flatten(torch.matmul(
+                        self.eij_layers[row_index],
+                        embed_out[0].T
+                    )).T
+                )
+            )
+
+        # Softmax the e_if values
+        # e_ij_softmax = nn.functional.softmax(torch.FloatTensor(e_ij_values))
+        e_ij_softmax = nn.functional.softmax(torch.FloatTensor(e_ij_values), dim=0)
+        attention_aware_row = torch.cat([row * val for row, val in zip(x, e_ij_softmax)])
+
+
+        # import pdb
+        # pdb.set_trace()
+
+        # attention_aware_row = torch.Tensor(np.array(attention_aware_row))
+        # torch.flatten(attention_aware_row)
+        lin = nn.Linear(len(attention_aware_row), 64)
+        rel = nn.ReLU()
+        # import pdb
+        # pdb.set_trace()
+        return rel(lin(attention_aware_row))
+
+
+class Colight(IndependentAgent):
     def __init__(self, config, obs_act, map_name, thread_number):
         super().__init__(config, obs_act, map_name, thread_number)
         for key in obs_act:
             obs_space = obs_act[key][0]
             act_space = obs_act[key][1]
-            k_size = 4
-            def conv2d_size_out(size, kernel_size=k_size, stride=1):
-                return (size - (kernel_size - 1) - 1) // stride + 1
-
-            h = conv2d_size_out(obs_space[1])
-            w = conv2d_size_out(obs_space[2])
 
             model = nn.Sequential(
-                nn.Conv2d(obs_space[0], 64, kernel_size=(k_size, k_size)),
-                nn.ReLU(),
-                nn.Flatten(),
-                nn.Linear(h * w * 64, 64),
+                AttentionLayer(obs_space[1], obs_space[2]),
+                nn.Linear(64, 64),
                 nn.ReLU(),
                 nn.Linear(64, 64),
                 nn.ReLU(),
                 nn.Linear(64, act_space),
-                priorOutputLayer(),
+                # priorOutputLayer(),
                 DiscreteActionValueHead()
             )
+
             self.agents[key] = DQNAgent(config, act_space, model)
+        # import pdb
+        # pdb.set_trace()
 
 
 class DQNAgent(Agent):
@@ -85,6 +155,7 @@ class DQNAgent(Agent):
                                    phi=lambda x: np.asarray(x, dtype=np.float32),
                                    target_update_interval=config['TARGET_UPDATE']*num_agents, update_interval=num_agents)
         else:
+            print("NOT SDQN")
             self.agent = DQN(self.model, self.optimizer, replay_buffer, config['GAMMA'], explorer,
                              gpu=self.device.index,
                              minibatch_size=config['BATCH_SIZE'], replay_start_size=config['BATCH_SIZE'],
@@ -95,9 +166,7 @@ class DQNAgent(Agent):
         if isinstance(self.agent, SharedDQN):
             return self.agent.act(observation, valid_acts=valid_acts, reverse_valid=reverse_valid)
         else:
-            act = self.agent.act(observation)
-            print(act)
-            return act
+            return self.agent.act(observation)
 
     def observe(self, observation, reward, done, info):
         if isinstance(self.agent, SharedDQN):

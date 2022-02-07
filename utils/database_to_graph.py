@@ -42,7 +42,7 @@ for metric in all_inputs:
     for (algorithm, state, reward, env) in resu:
     # for algorithm in algorithms:
         plt.plot(results_averaged[(algorithm, state, reward, metric)], label=algorithm[0])
-    plt.legend(resu)
+    plt.legend(resu, bbox_to_anchor=(0, 1), loc='upper left', ncol=1)
     plt.title(metric)
     plt.show()
 

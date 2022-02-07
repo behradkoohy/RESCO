@@ -10,7 +10,12 @@ from agents.mplight import MPLight
 from agents.fma2c import FMA2C
 from agents.graph import Graph_IDQN
 from agents.graph_rec import Graph_RIDQN
+<<<<<<< HEAD
 from agents.rainbow import Rainbow
+=======
+from agents.colight import Colight
+
+>>>>>>> 000b51a7995697ca8530a8dda97045ef842dbec2
 from agents.models.TwoConvLayers import TwoConvLayer
 
 
@@ -260,6 +265,19 @@ agent_configs = {
     'RAINBOW': {
         'agent': Rainbow,
         'state': states.drq_norm,
+        'reward': rewards.wait_norm,
+        'max_distance': 200,
+        'BATCH_SIZE': 32,
+        'GAMMA': 0.99,
+        'EPS_START': 1.0,
+        'EPS_END': 0.0,
+        'EPS_DECAY': 220,
+        'TARGET_UPDATE': 500,
+    },
+
+    'COL': {
+        'agent': Colight,
+        'state': states.graph_pooled,
         'reward': rewards.wait_norm,
         'max_distance': 200,
         'BATCH_SIZE': 32,

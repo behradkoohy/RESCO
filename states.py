@@ -80,7 +80,9 @@ def graph_pooled(signals):
             [obs.append(x) for x in neighbour_obs]
 
         observations[signal_id] = np.expand_dims(np.asarray(obs), axis=0)
-
+    # import pdb
+    # pdb.set_trace()
+    print(observations[signal_id].shape)
     return observations
 
 
