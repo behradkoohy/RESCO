@@ -10,12 +10,8 @@ from agents.mplight import MPLight
 from agents.fma2c import FMA2C
 from agents.graph import Graph_IDQN
 from agents.graph_rec import Graph_RIDQN
-<<<<<<< HEAD
 from agents.rainbow import Rainbow
-=======
 from agents.colight import Colight
-
->>>>>>> 000b51a7995697ca8530a8dda97045ef842dbec2
 from agents.models.TwoConvLayers import TwoConvLayer
 
 

@@ -8,7 +8,7 @@ import pfrl
 from pfrl import explorers, replay_buffers
 from pfrl.explorer import Explorer
 from pfrl.agents import CategoricalDoubleDQN as DQN
-from pfrl.q_functions import DiscreteActionValueHead
+from pfrl.q_functions import DistributionalDuelingDQN, DiscreteActionValueHead
 from pfrl.utils.contexts import evaluating
 
 from agents.agent import IndependentAgent, Agent
@@ -38,7 +38,7 @@ class Rainbow(IndependentAgent):
                 nn.Linear(64, act_space),
                 DiscreteActionValueHead()
             )
-
+            model = DistributionalDuelingDQN(act_space, h, -10, 10)
             self.agents[key] = DQNAgent(config, act_space, model)
 
 
@@ -48,7 +48,7 @@ class DQNAgent(Agent):
 
         self.model = model
         self.optimizer = torch.optim.Adam(self.model.parameters())
-        replay_buffer = replay_buffers.ReplayBuffer(10000)
+        replay_buffer = replay_buffers.PrioritizedReplayBuffer(10000, alpha=0.5, beta0=0.4)
 
         if num_agents > 0:
             explorer = SharedEpsGreedy(
