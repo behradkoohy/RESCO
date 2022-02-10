@@ -3,12 +3,16 @@ import numpy as np
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
+from pfrl.nn.mlp import MLP
 
 import pfrl
-from pfrl import explorers, replay_buffers
+from pfrl import explorers, replay_buffers, action_value
 from pfrl.explorer import Explorer
-from pfrl.agents import CategoricalDoubleDQN as DQN
-from pfrl.q_functions import DistributionalDuelingDQN, DiscreteActionValueHead
+from pfrl.agents import DoubleDQN as DQN
+from pfrl.initializers import init_chainer_default
+from pfrl.q_function import StateQFunction
+from pfrl.q_functions import DiscreteActionValueHead
 from pfrl.utils.contexts import evaluating
 
 from agents.agent import IndependentAgent, Agent
@@ -26,7 +30,8 @@ class Rainbow(IndependentAgent):
 
             h = conv2d_size_out(obs_space[1])
             w = conv2d_size_out(obs_space[2])
-
+            # import pdb
+            # pdb.set_trace()
             model = nn.Sequential(
                 nn.Conv2d(obs_space[0], 64, kernel_size=(2, 2)),
                 nn.ReLU(),
@@ -38,7 +43,7 @@ class Rainbow(IndependentAgent):
                 nn.Linear(64, act_space),
                 DiscreteActionValueHead()
             )
-            model = DistributionalDuelingDQN(act_space, h, -10, 10)
+
             self.agents[key] = DQNAgent(config, act_space, model)
 
 
@@ -48,7 +53,14 @@ class DQNAgent(Agent):
 
         self.model = model
         self.optimizer = torch.optim.Adam(self.model.parameters())
-        replay_buffer = replay_buffers.PrioritizedReplayBuffer(10000, alpha=0.5, beta0=0.4)
+        # replay_buffer = replay_buffers.ReplayBuffer(10000)
+        replay_buffer = replay_buffers.PrioritizedReplayBuffer(
+            10 ** 6,
+            alpha=0.5,
+            beta0=0.4,
+            num_steps=3,
+            normalize_by_max="memory",
+        )
 
         if num_agents > 0:
             explorer = SharedEpsGreedy(
@@ -154,13 +166,11 @@ class SharedDQN(DQN):
             valid_batch_action.append(valid_acts[i][batch_action[i]])
         return valid_batch_action
 
-
 def select_action_epsilon_greedily(epsilon, random_action_func, greedy_action_func):
     if np.random.rand() < epsilon:
         return random_action_func(), False
     else:
         return greedy_action_func(), True
-
 
 class SharedEpsGreedy(explorers.LinearDecayEpsilonGreedy):
 
