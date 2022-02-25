@@ -23,7 +23,6 @@ class priorOutputLayer(nn.Module):
         # print(x.shape)
         # print(x.view(1,3).shape)
         # return x.view(1,len(x))
-        print(x, x.shape, x.dim)
         return x
 
 class IDQN(IndependentAgent):
@@ -96,7 +95,7 @@ class DQNAgent(Agent):
             return self.agent.act(observation, valid_acts=valid_acts, reverse_valid=reverse_valid)
         else:
             act = self.agent.act(observation)
-            print(act)
+            #print(act)
             return act
 
     def observe(self, observation, reward, done, info):
