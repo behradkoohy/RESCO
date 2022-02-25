@@ -5,12 +5,17 @@ from agents.stochastic import STOCHASTIC
 from agents.maxwave import MAXWAVE
 from agents.maxpressure import MAXPRESSURE
 from agents.test_dqn import IDQN
+from agents.dqn400 import IDQN400
+from agents.dqn800 import IDQN800
 from agents.pfrl_ppo import IPPO
 from agents.mplight import MPLight
 from agents.fma2c import FMA2C
 from agents.graph import Graph_IDQN
 from agents.graph_rec import Graph_RIDQN
 from agents.rainbow import Rainbow
+from agents.rainbow400 import Rainbow400
+from agents.rainbow800 import Rainbow800
+from agents.srainbow import SRainbow
 from agents.colight import Colight
 from agents.models.TwoConvLayers import TwoConvLayer
 
@@ -283,4 +288,65 @@ agent_configs = {
         'EPS_DECAY': 220,
         'TARGET_UPDATE': 500
     },
+    'RAINBOW400': {
+        'agent': Rainbow400,
+        'state': states.drq_norm,
+        'reward': rewards.wait_norm,
+        'max_distance': 400,
+        'BATCH_SIZE': 32,
+        'GAMMA': 0.99,
+        'EPS_START': 1.0,
+        'EPS_END': 0.0,
+        'EPS_DECAY': 220,
+        'TARGET_UPDATE': 500,
+    },
+    'RAINBOW800': {
+        'agent': Rainbow800,
+        'state': states.drq_norm,
+        'reward': rewards.wait_norm,
+        'max_distance': 800,
+        'BATCH_SIZE': 32,
+        'GAMMA': 0.99,
+        'EPS_START': 1.0,
+        'EPS_END': 0.0,
+        'EPS_DECAY': 220,
+        'TARGET_UPDATE': 500,
+    },
+    'IDQN400': {
+        'agent': IDQN400,
+        'state': states.drq_norm,
+        'reward': rewards.wait_norm,
+        'max_distance': 400,
+        'BATCH_SIZE': 32,
+        'GAMMA': 0.99,
+        'EPS_START': 1.0,
+        'EPS_END': 0.0,
+        'EPS_DECAY': 220,
+        'TARGET_UPDATE': 500
+    },
+    'IDQN800': {
+        'agent': IDQN800,
+        'state': states.drq_norm,
+        'reward': rewards.wait_norm,
+        'max_distance': 800,
+        'BATCH_SIZE': 32,
+        'GAMMA': 0.99,
+        'EPS_START': 1.0,
+        'EPS_END': 0.0,
+        'EPS_DECAY': 220,
+        'TARGET_UPDATE': 500
+    },
+    'SRAINBOW': {
+        'agent':SRainbow,
+        'state': states.drq_norm,
+        'reward': rewards.wait_norm,
+        'max_distance':200,
+        'BATCH_SIZE': 32,
+        'GAMMA': 0.99,
+        'EPS_START': 1.0,
+        'EPS_END': 0.0,
+        'EPS_DECAY': 220,
+        'TARGET_UPDATE': 500,
+    },
+
 }

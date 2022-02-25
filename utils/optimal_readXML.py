@@ -9,7 +9,7 @@ from db_config import emission_outputs, metrics, db_name
 
 # log_dir = '/home/behradkoohy/sumo_scratchpad/behrad-resco/RESCO/logs/'
 # log_dir = '/media/behradkoohy/pdata/iridis/agent_experiments/didqn_exp/'
-log_dir = '/scratch/bk2g18/logs/'
+log_dir = '/scratch/bk2g18/paper_logs/'
 db_dir = "outputs.dir"
 env_base = '..' + os.sep + 'environments' + os.sep
 

@@ -139,8 +139,6 @@ def run_trial(args, trial):
             #         # agt_obs = np.append(agt_obs, memory)
             #         new_agt_obs[agt] = agt_obs
             #     obs = new_agt_obs
-            import pdb
-            pdb.set_trace()
             obs, rew, done, info = env.step(act)
             # print(info)
             agent.observe(obs, rew, done, info)

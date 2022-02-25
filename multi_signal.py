@@ -37,7 +37,7 @@ class MultiSignal(gym.Env):
         else:
             self.connection_name = connection_name
         self.map_name = map_name
-
+        print("Connection Name:", self.connection_name)
         # Run some steps in the simulation with default light configurations to detect phases
         if self.route is not None:
             sumo_cmd = [sumolib.checkBinary('sumo'), '-n', net, '-r', self.route + '_1.rou.xml', '--no-warnings', 'True']
