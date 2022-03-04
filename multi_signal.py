@@ -142,7 +142,8 @@ class MultiSignal(gym.Env):
                           '--tripinfo-output.write-unfinished',
                           '--no-step-log', 'True',
                           '--no-warnings', 'True',
-                          '--device.emissions.probability', '1.0']
+                          '--device.emissions.probability', '1.0',
+                          '--scale', 2]
         if self.libsumo:
             traci.start(self.sumo_cmd)
             self.sumo = traci
