@@ -18,11 +18,18 @@ rewards = [x[2] for x in resu]
 
 # print(resu, algorithms, states)
 
+algo_labels = {
+    "IDQN":"IDQN",
+    "SRainbow":"Rainbow",
+    "Rainbow":"Rainbow",
+    "MPLight": ""
+}
+
 results_averaged = {}
 
 for metric in all_inputs:
     for (algorithm, state, reward, env) in resu:
-        cur.execute("SELECT max(epoch) FROM experiments WHERE epoch=100 AND metric=? AND algorithm=? AND state=? AND environment=? AND reward=?;", (metric, algorithm, state, env, reward))
+        cur.execute("SELECT max(epoch) FROM experiments WHERE metric=? AND algorithm=? AND state=? AND environment=? AND reward=?;", (metric, algorithm, state, env, reward))
         final_epoch = cur.fetchone()[0]
         for x in range(1, final_epoch+1):
             cur.execute("SELECT avg(result) FROM experiments WHERE epoch=? AND metric=? AND algorithm=? AND state=? AND environment=? AND reward=?;", (x, metric, algorithm, state, env, reward))
@@ -40,9 +47,16 @@ for metric in all_inputs:
 
 for metric in all_inputs:
     for (algorithm, state, reward, env) in resu:
+        if algorithm in ['MPLight', 'SRainbow']:
+            continue
     # for algorithm in algorithms:
-        plt.plot(results_averaged[(algorithm, state, reward, metric)], label=algorithm[0])
-    plt.legend(resu, bbox_to_anchor=(0, 1), loc='upper left', ncol=1)
-    plt.title(metric)
-    plt.show()
+        # print(algorithm[0])
+        plt.plot(results_averaged[(algorithm, state, reward, metric)], label=algo_labels[algorithm])
+    # plt.legend([r[0] for r in resu], bbox_to_anchor=(0, 1), loc='upper left', ncol=1)
+    plt.legend([algo_labels[r[0]] for r in resu], bbox_to_anchor=(0, 1), loc='upper left', ncol=1)
+    # plt.title(metric)
+    plt.ylabel('Duration')
+    plt.xlabel('Epoch')
+    # plt.show()
+    plt.savefig(db_name.replace(".db", "") + "_" + metric + "epochs" + '.png', bbox_inches='tight')
 
