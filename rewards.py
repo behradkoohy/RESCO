@@ -3,15 +3,59 @@ import numpy as np
 from mdp_config import mdp_configs
 
 
+def average_speed(signals):
+    rewards = dict()
+    for signal_id, signal in signals.items():
+        cars = 0
+        speed = 0
+        for i, lane in enumerate(signal.lanes):
+            vehicles = signal.full_observation[lane]['vehicles']
+            for vehicle in vehicles:
+                speed += vehicle['speed']
+                cars += 1
+            if cars == 0:
+                rewards[signal_id] = 0
+            else:
+                rewards[signal_id] = speed / cars
+    return rewards
+
+def average_speed_norm(signals):
+    rewards = dict()
+    for signal_id, signal in signals.items():
+        cars = 0
+        speed = 0
+        mspeed = 0
+        for i, lane in enumerate(signal.lanes):
+            vehicles = signal.full_observation[lane]['vehicles']
+            for vehicle in vehicles:
+                speed += vehicle['speed']
+                cars += 1
+                if mspeed > vehicle['speed']:
+                    mspeed = vehicle['speed']
+        if cars == 0:
+            rewards[signal_id] = 0
+        elif mspeed == 0 :
+            rewards[signal_id] = ( speed / cars )
+        else:
+            rewards[signal_id] = ( speed / cars ) / mspeed
+    return rewards
+
+def mwait(signals):
+    rewards = dict()
+    for signal_id in signals:
+        total_wait = 0
+        for lane in signals[signal_id].lanes:
+            total_wait += signals[signal_id].full_observation[lane]['max_wait']
+        rewards[signal_id] = -total_wait
+    return rewards
+
+
 def wait(signals):
     rewards = dict()
     for signal_id in signals:
         total_wait = 0
         for lane in signals[signal_id].lanes:
-            import pdb
-            pdb.set_trace()
             total_wait += signals[signal_id].full_observation[lane]['total_wait']
-
         rewards[signal_id] = -total_wait
     return rewards
 
@@ -22,7 +66,6 @@ def wait_norm(signals):
         total_wait = 0
         for lane in signals[signal_id].lanes:
             total_wait += signals[signal_id].full_observation[lane]['total_wait']
-
         rewards[signal_id] = np.clip(-total_wait/224, -4, 4).astype(np.float32)
     return rewards
 
@@ -83,7 +126,7 @@ def queue_maxwait(signals):
         reward = 0
         for lane in signal.lanes:
             reward += signal.full_observation[lane]['queue']
-            reward += (signal.full_observation[lane]['max_wait'] * mdp_configs['MA2C']['coef'])
+            reward += (signal.full_observation[lane]['max_wait'] * 0.9)
         rewards[signal_id] = -reward
     return rewards
 
@@ -98,7 +141,7 @@ def queue_maxwait_neighborhood(signals):
         for key in signal.downstream:
             neighbor = signal.downstream[key]
             if neighbor is not None:
-                sum_reward += (mdp_configs['MA2C']['coop_gamma'] * rewards[neighbor])
+                sum_reward += (0.9 * rewards[neighbor])
         neighborhood_rewards[signal_id] = sum_reward
 
     return neighborhood_rewards
