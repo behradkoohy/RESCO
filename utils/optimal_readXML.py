@@ -10,8 +10,9 @@ from db_config import emission_outputs, metrics, db_name
 # log_dir = '/home/behradkoohy/sumo_scratchpad/behrad-resco/RESCO/logs/'
 # log_dir = '/media/behradkoohy/pdata/iridis/agent_experiments/didqn_exp/'
 # log_dir = '/scratch/bk2g18/logs/'
-log_dir = '/scratch/bk2g18/result_fn_logs/50_scale_reward/'
-db_dir = "max_outputs.dir"
+# log_dir = '/scratch/bk2g18/result_fn_logs/50_scale_reward/'
+log_dir = '/scratch/bk2g18/rainbow_reward_fn_scale100/'
+db_dir = "outputs.dir"
 env_base = '..' + os.sep + 'environments' + os.sep
 
 titles = set([folder.split("-")[0] for folder in os.listdir(log_dir)])
@@ -86,12 +87,12 @@ def add_to_db(trial, run_name):
                     emission = child[0].attrib
                     # take the emission metrics
                     for met in emission_outputs:
-                        #metric_outs[met] = metric_outs.get(met, 0) + float(emission[met])
-                        metric_outs[met] = max(metric_outs.get(met, 0), float(emission[met]))
+                        metric_outs[met] = metric_outs.get(met, 0) + float(emission[met])
+                        #metric_outs[met] = max(metric_outs.get(met, 0), float(emission[met]))
                     # take the performance metrics
                     for met in metrics:
-                        #metric_outs[met] = metric_outs.get(met, 0) + float(child.attrib[met])
-                        metric_outs[met] = max(metric_outs.get(met, 0), float(child.attrib[met]))
+                        metric_outs[met] = metric_outs.get(met, 0) + float(child.attrib[met])
+                        #metric_outs[met] = max(metric_outs.get(met, 0), float(child.attrib[met]))
                 except Exception as e:
                     print(e)
                     break

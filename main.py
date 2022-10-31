@@ -29,7 +29,7 @@ def main():
     ap.add_argument("--tr", type=int, default=0)  # Can't multi-thread with libsumo, provide a trial number
     ap.add_argument("--out_name", type=str, default="")
     args = ap.parse_args()
-    # args.map = 'ingolstadt21'
+    args.map = 'ingolstadt21'
     # args.out_name = args.agent + "-" + str(args.tr) + "-" + args.map
     args.trials = 1
     args.libsumo = True
